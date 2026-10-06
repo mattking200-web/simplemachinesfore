@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Simple Machines & Movement - Grade 2 Science</title>
+  <style>
+    :root {
+      --bg-color: #f0f9ff;
+      --card-bg: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #0284c7;
+      --accent-yellow: #f59e0b;
+      --accent-green: #16a34a;
+      --text-dark: #0f172a;
+      --text-muted: #475569;
+      --border-radius: 20px;
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg-color);
+      font-family: var(--font-main);
+      color: var(--text-dark);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: #ffffff;
+      padding: 12px 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .brand h1 {
+      font-size: 1.3rem;
+      margin: 0;
+      color: var(--primary);
+    }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      background: #f1f5f9;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    .star-counter {
+      background: #fef3c7;
+      border: 2px solid #fde047;
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #b45309;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Screens */
+    .screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .screen.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home Level Grid */
+    .level-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 16px;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .level-card {
+      background: var(--card-bg);
+      border: 3px solid #e2e8f0;
+      border-radius: var(--border-radius);
+      padding: 20px 12px;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .level-card.unlocked {
+      border-color: var(--primary);
+      background: #ffffff;
+    }
+
+    .level-card.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background: #f8fafc;
+    }
+
+    .level-number {
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .level-card.locked .level-number {
+      background: #94a3b8;
+    }
+
+    .level-title {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: var(--text-dark);
+    }
+
+    /* Badges Display */
+    .badge-section {
+      width: 100%;
+      background: #ffffff;
+      border-radius: var(--border-radius);
+      padding: 16px;
+      margin-top: 25px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .badge-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+
+    .badge-item {
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--text-muted);
+    }
+
+    .badge-item.earned {
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      color: #15803d;
+    }
+
+    /* Question & Task Cards */
+    .activity-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 24px;
+      width: 100%;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .question-text {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--text-dark);
+      margin: 0;
+    }
+
+    .visual-area {
+      width: 100%;
+      max-width: 380px;
+      height: 220px;
+      background: #f8fafc;
+      border-radius: 16px;
+      border: 2px solid #e2e8f0;
+      margin: 15px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Options Grid & Large Buttons */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .btn-option {
+      background: #ffffff;
+      border: 3px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 18px 12px;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--text-dark);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 90px;
+      box-shadow: 0 4px 0 #94a3b8;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .btn-option:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #94a3b8;
+    }
+
+    .btn-option.correct {
+      background-color: #dcfce7 !important;
+      border-color: var(--accent-green) !important;
+      color: #14532d !important;
+      box-shadow: 0 4px 0 #15803d !important;
+    }
+
+    /* Modals */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #ffffff;
+      border-radius: var(--border-radius);
+      max-width: 650px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #f1f5f9;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    /* Teacher Progress Screen & Cards */
+    .vocab-card {
+      background: #f8fafc;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-align: left;
+    }
+
+    .vocab-card svg {
+      flex-shrink: 0;
+    }
+
+    /* Canvas Celebration overlay */
+    #celebration-canvas {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 300;
+    }
+
+    .speaker-btn {
+      background: #e0f2fe;
+      border: 2px solid #7dd3fc;
+      color: #0369a1;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .action-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 14px 28px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--primary-hover);
+      margin-top: 15px;
+    }
+
+    .action-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 var(--primary-hover);
+    }
+
+    /* SVG Styling helper */
+    svg.demo-graphic {
+      width: 100%;
+      height: 100%;
+      max-height: 200px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti Canvas -->
+  <canvas id="celebration-canvas"></canvas>
+
+  <!-- Navigation Bar -->
+  <header>
+    <div class="brand" onclick="app.showScreen('menu')">
+      <span style="font-size: 1.8rem;">⚙️</span>
+      <h1>Simple Machines</h1>
+    </div>
+    <div class="nav-controls">
+      <div class="star-counter" id="star-display">⭐ 0</div>
+      <button class="icon-btn" id="tts-toggle" title="Toggle Speech" onclick="app.toggleTTS()">🔊</button>
+      <button class="icon-btn" id="sound-toggle" title="Toggle Sounds" onclick="app.toggleSound()">🎵</button>
+      <button class="icon-btn" onclick="app.openModal('vocab-modal')" title="Vocabulary">📖</button>
+      <button class="icon-btn" onclick="app.openModal('teacher-modal')" title="Teacher Area">🍎</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- SCREEN: MAIN MENU -->
+    <section id="menu-screen" class="screen active">
+      <div style="text-align: center; margin-bottom: 10px;">
+        <h2 style="margin: 5px 0; color: var(--primary);">Ontario Grade 2 Science</h2>
+        <p style="margin: 0; color: var(--text-muted);">Structures and Mechanisms: Simple Machines & Movement</p>
+      </div>
+
+      <div class="level-grid" id="level-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Earned Badges -->
+      <div class="badge-section">
+        <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: var(--text-dark);">🏆 Your Badges</h3>
+        <div class="badge-grid" id="badge-grid">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN: LEVEL ACTIVITY -->
+    <section id="activity-screen" class="screen">
+      <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <button class="action-btn" style="padding: 8px 16px; font-size: 1rem; margin:0;" onclick="app.showScreen('menu')">🏠 Home</button>
+        <span id="level-indicator" style="font-weight: bold; color: var(--secondary); font-size: 1.1rem;">Level 1</span>
+      </div>
+
+      <div class="activity-card" id="activity-card">
+        <!-- Dynamic Content Injected Here -->
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL: VOCABULARY -->
+  <div id="vocab-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="app.closeModal('vocab-modal')">✖</button>
+      <h2 style="color: var(--primary); margin-top: 0;">📚 Science Vocabulary</h2>
+      <div id="vocab-list">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TEACHER DASHBOARD -->
+  <div id="teacher-modal" class="modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="app.closeModal('teacher-modal')">✖</button>
+      <h2 style="color: var(--primary); margin-top: 0;">🍎 Teacher & Assessment Dashboard</h2>
+      
+      <h3>Curriculum Expectations (Ontario Grade 2)</h3>
+      <p style="font-size: 0.95rem; color: var(--text-muted);">
+        This app directly supports <strong>Structures and Mechanisms: Simple Machines and Movement</strong> expectations:
+      </p>
+      <ul style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.5;">
+        <li><strong>B1.</strong> Assess impact of simple machines on daily life and the environment.</li>
+        <li><strong>B2.1</strong> Describe ways in which giant/simple machines make work easier.</li>
+        <li><strong>B2.2</strong> Identify six simple machines (lever, wheel/axle, pulley, inclined plane, wedge, screw).</li>
+        <li><strong>B2.3</strong> Identify mechanisms that change the direction or amount of force applied.</li>
+        <li><strong>B2.4</strong> Demonstrate how forces (pushes and pulls) cause movement or change speed/direction.</li>
+      </ul>
+
+      <h3>Student Progress Checklist</h3>
+      <div id="teacher-progress-list" style="margin-bottom: 20px;">
+        <!-- Injected JS -->
+      </div>
+
+      <button class="action-btn" style="background: #ef4444;" onclick="app.resetProgress()">🔄 Reset All Progress</button>
+    </div>
+  </div>
+
+  <script>
+    // --- Audio Synthesizer (Web Audio API) ---
+    class SoundEffects {
+      constructor() {
+        this.ctx = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+      }
+
+      playCorrect() {
+        if (!app.state.soundOn) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        osc.frequency.setValueAtTime(1046.50, now + 0.3); // C6
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.6);
+      }
+
+      playFanfare() {
+        if (!app.state.soundOn) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [440, 554.37, 659.25, 880];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          const now = this.ctx.currentTime + idx * 0.12;
+
+          osc.frequency.setValueAtTime(freq, now);
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.4);
+        });
+      }
+    }
+
+    const soundFX = new SoundEffects();
+
+    // --- Graphics Generator (Inline Pure SVGs) ---
+    const Visuals = {
+      drawer: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <rect x="30" y="20" width="140" height="110" rx="8" fill="#cbd5e1" stroke="#475569" stroke-width="4"/>
+        <rect x="40" y="35" width="120" height="35" rx="4" fill="#94a3b8"/>
+        <circle cx="100" cy="52.5" r="7" fill="#1e293b"/>
+        <rect x="40" y="80" width="120" height="35" rx="4" fill="#64748b"/>
+        <circle cx="100" cy="97.5" r="7" fill="#1e293b"/>
+        <path d="M 100 52 L 100 15 M 95 23 L 100 15 L 105 23" stroke="#2563eb" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>`,
+
+      shoppingCart: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <path d="M 30 30 L 50 30 L 70 100 L 160 100 L 180 45 L 60 45" stroke="#0284c7" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="80" cy="120" r="12" fill="#334155"/>
+        <circle cx="150" cy="120" r="12" fill="#334155"/>
+        <path d="M 120 70 L 170 70 M 160 63 L 170 70 L 160 77" stroke="#16a34a" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+
+      kickBall: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <circle cx="70" cy="90" r="28" fill="#f59e0b" stroke="#b45309" stroke-width="4"/>
+        <path d="M 105 90 L 165 90 M 150 80 L 165 90 L 150 100" stroke="#2563eb" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`,
+
+      wagon: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <rect x="60" y="60" width="110" height="40" rx="6" fill="#ef4444" stroke="#991b1b" stroke-width="4"/>
+        <circle cx="85" cy="110" r="14" fill="#1e293b"/>
+        <circle cx="145" cy="110" r="14" fill="#1e293b"/>
+        <path d="M 60 80 L 20 50" stroke="#475569" stroke-width="5" stroke-linecap="round"/>
+        <path d="M 50 40 L 15 20 M 20 30 L 15 20 L 25 18" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+      </svg>`,
+
+      door: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <rect x="40" y="15" width="120" height="120" fill="#e2e8f0" stroke="#64748b" stroke-width="4"/>
+        <rect x="50" y="20" width="100" height="110" fill="#b45309" rx="4"/>
+        <circle cx="135" cy="75" r="6" fill="#fbbf24"/>
+        <path d="M 120 75 L 70 75 M 80 67 L 70 75 L 80 83" stroke="#16a34a" stroke-width="5" stroke-linecap="round"/>
+      </svg>`,
+
+      zipper: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <line x1="100" y1="20" x2="100" y2="130" stroke="#475569" stroke-width="10" stroke-dasharray="10 6"/>
+        <rect x="85" y="60" width="30" height="35" rx="4" fill="#94a3b8" stroke="#1e293b" stroke-width="3"/>
+        <path d="M 100 95 L 100 135 M 93 125 L 100 135 L 107 125" stroke="#2563eb" stroke-width="5" stroke-linecap="round"/>
+      </svg>`,
+
+      lever: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <polygon points="100,90 80,125 120,125" fill="#64748b" stroke="#334155" stroke-width="3"/>
+        <rect x="30" y="82" width="140" height="10" rx="3" fill="#b45309" transform="rotate(-8 100 90)"/>
+        <rect x="30" y="52" width="30" height="30" fill="#ef4444" rx="4"/>
+        <text x="45" y="72" font-size="14" fill="white" font-weight="bold" text-anchor="middle">LOAD</text>
+      </svg>`,
+
+      wheelAxle: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <circle cx="100" cy="75" r="50" fill="#38bdf8" stroke="#0284c7" stroke-width="6"/>
+        <circle cx="100" cy="75" r="14" fill="#0f172a"/>
+        <line x1="100" y1="25" x2="100" y2="125" stroke="#ffffff" stroke-width="4"/>
+        <line x1="50" y1="75" x2="150" y2="75" stroke="#ffffff" stroke-width="4"/>
+      </svg>`,
+
+      pulley: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <rect x="92" y="10" width="16" height="30" fill="#64748b"/>
+        <circle cx="100" cy="45" r="22" fill="#cbd5e1" stroke="#334155" stroke-width="4"/>
+        <path d="M 82 45 L 82 120" stroke="#f59e0b" stroke-width="4"/>
+        <path d="M 118 45 L 118 100" stroke="#f59e0b" stroke-width="4"/>
+        <rect x="103" y="100" width="30" height="30" fill="#ef4444" rx="4"/>
+      </svg>`,
+
+      inclinedPlane: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <polygon points="30,120 170,120 170,40" fill="#cbd5e1" stroke="#475569" stroke-width="4"/>
+        <rect x="80" y="65" width="30" height="25" fill="#f59e0b" transform="rotate(-30 95 77)" rx="3"/>
+      </svg>`,
+
+      wedge: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <polygon points="60,30 140,30 100,125" fill="#94a3b8" stroke="#334155" stroke-width="4"/>
+        <line x1="100" y1="30" x2="100" y2="125" stroke="#e2e8f0" stroke-width="2"/>
+      </svg>`,
+
+      screw: `<svg class="demo-graphic" viewBox="0 0 200 150">
+        <rect x="85" y="20" width="30" height="15" fill="#64748b" rx="2"/>
+        <rect x="92" y="35" width="16" height="85" fill="#94a3b8"/>
+        <polygon points="92,120 108,120 100,138" fill="#94a3b8"/>
+        <path d="M 90 45 L 110 52 M 90 60 L 110 67 M 90 75 L 110 82 M 90 90 L 110 97 M 90 105 L 110 112" stroke="#334155" stroke-width="4"/>
+      </svg>`
+    };
+
+    // --- App Logic & State ---
+    class App {
+      constructor() {
+        this.state = {
+          stars: 0,
+          unlockedLevel: 1,
+          soundOn: true,
+          ttsOn: true,
+          earnedBadges: []
+        };
+
+        this.currentLevel = 1;
+        this.currentQuestionIdx = 0;
+
+        this.levelsData = [
+          { id: 1, title: "Push or Pull", badge: "Push & Pull Expert" },
+          { id: 2, title: "Movement", badge: "Movement Master" },
+          { id: 3, title: "What is a Machine?", badge: "Machine Explorer" },
+          { id: 4, title: "Six Simple Machines", badge: "Machine Finder" },
+          { id: 5, title: "Identify Machines", badge: "Machine Detective" },
+          { id: 6, title: "Machines Around Us", badge: "Real-Life Hero" },
+          { id: 7, title: "How Machines Help", badge: "Force Helper" },
+          { id: 8, title: "Compare & Choose", badge: "Smart Chooser" },
+          { id: 9, title: "Predict What Happens", badge: "Future Predictor" },
+          { id: 10, title: "Final Challenge", badge: "Simple Machine Champion" }
+        ];
+
+        this.vocab = [
+          { word: "Force", def: "A push or pull that can make things move, stop, or change direction.", graphic: Visuals.kickBall },
+          { word: "Push", def: "A force that moves something AWAY from you.", graphic: Visuals.shoppingCart },
+          { word: "Pull", def: "A force that moves something TOWARD you.", graphic: Visuals.drawer },
+          { word: "Simple Machine", def: "A tool with few or no moving parts that helps us do work easily.", graphic: Visuals.lever },
+          { word: "Lever", def: "A stiff bar that pivots on a point to lift heavy things.", graphic: Visuals.lever },
+          { word: "Wheel and Axle", def: "A wheel connected to a rod to roll things smoothly.", graphic: Visuals.wheelAxle },
+          { word: "Pulley", def: "A wheel with a rope around it used to lift things up high.", graphic: Visuals.pulley },
+          { word: "Inclined Plane", def: "A sloped surface or ramp that helps move heavy loads up.", graphic: Visuals.inclinedPlane },
+          { word: "Wedge", def: "A tool with a sharp edge used to split or cut things apart.", graphic: Visuals.wedge },
+          { word: "Screw", def: "An inclined plane wrapped around a pole to hold things together.", graphic: Visuals.screw }
+        ];
+      }
+
+      init() {
+        this.loadLocalStorage();
+        this.renderMenu();
+        this.renderVocab();
+        this.updateHeaderDisplay();
+      }
+
+      loadLocalStorage() {
+        const saved = localStorage.getItem("ontario_sci_grade2_app");
+        if (saved) {
+          try {
+            const parsed = JSON.parse(saved);
+            this.state = { ...this.state, ...parsed };
+          } catch(e) { console.error(e); }
+        }
+      }
+
+      saveLocalStorage() {
+        localStorage.setItem("ontario_sci_grade2_app", JSON.stringify(this.state));
+      }
+
+      toggleSound() {
+        this.state.soundOn = !this.state.soundOn;
+        document.getElementById("sound-toggle").innerText = this.state.soundOn ? "🎵" : "🔇";
+        this.saveLocalStorage();
+      }
+
+      toggleTTS() {
+        this.state.ttsOn = !this.state.ttsOn;
+        document.getElementById("tts-toggle").innerText = this.state.ttsOn ? "🔊" : "🚫";
+        if (!this.state.ttsOn && window.speechSynthesis) {
+          window.speechSynthesis.cancel();
+        }
+        this.saveLocalStorage();
+      }
+
+      speak(text) {
+        if (!this.state.ttsOn || !('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9; // Friendly slower rate for Grade 2
+        window.speechSynthesis.speak(utterance);
+      }
+
+      updateHeaderDisplay() {
+        document.getElementById("star-display").innerText = `⭐ ${this.state.stars}`;
+      }
+
+      renderMenu() {
+        const grid = document.getElementById("level-grid");
+        grid.innerHTML = "";
+
+        this.levelsData.forEach(lvl => {
+          const isUnlocked = lvl.id <= this.state.unlockedLevel;
+          const card = document.createElement("div");
+          card.className = `level-card ${isUnlocked ? 'unlocked' : 'locked'}`;
+          card.innerHTML = `
+            <div class="level-number">${isUnlocked ? lvl.id : '🔒'}</div>
+            <div class="level-title">${lvl.title}</div>
+          `;
+          if (isUnlocked) {
+            card.onclick = () => this.startLevel(lvl.id);
+          }
+          grid.appendChild(card);
+        });
+
+        // Render Badges
+        const badgeGrid = document.getElementById("badge-grid");
+        badgeGrid.innerHTML = "";
+        this.levelsData.forEach(lvl => {
+          const earned = this.state.earnedBadges.includes(lvl.badge);
+          const badgeEl = document.createElement("div");
+          badgeEl.className = `badge-item ${earned ? 'earned' : ''}`;
+          badgeEl.innerHTML = `<span>${earned ? '🏆' : '🔒'}</span> <span>${lvl.badge}</span>`;
+          badgeGrid.appendChild(badgeEl);
+        });
+
+        // Render Teacher modal progress checklist
+        const tProgress = document.getElementById("teacher-progress-list");
+        tProgress.innerHTML = "";
+        this.levelsData.forEach(lvl => {
+          const isDone = lvl.id < this.state.unlockedLevel || (lvl.id === 10 && this.state.earnedBadges.includes(lvl.badge));
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #e2e8f0;";
+          row.innerHTML = `<span>Level ${lvl.id}: ${lvl.title}</span> <strong>${isDone ? '✅ Completed' : '⏳ In Progress'}</strong>`;
+          tProgress.appendChild(row);
+        });
+      }
+
+      showScreen(screenId) {
+        document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+        document.getElementById(`${screenId}-screen`).classList.add("active");
+        if (screenId === 'menu') {
+          this.renderMenu();
+        }
+      }
+
+      openModal(id) {
+        document.getElementById(id).classList.add("active");
+      }
+
+      closeModal(id) {
+        document.getElementById(id).classList.remove("active");
+      }
+
+      renderVocab() {
+        const container = document.getElementById("vocab-list");
+        container.innerHTML = "";
+        this.vocab.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "vocab-card";
+          card.innerHTML = `
+            <div style="width:70px; height:70px;">${v.graphic}</div>
+            <div style="flex:1;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <h4 style="margin:0; font-size:1.2rem; color:var(--primary);">${v.word}</h4>
+                <button class="speaker-btn" onclick="app.speak('${v.word}. ${v.def}')">🔊</button>
+              </div>
+              <p style="margin:4px 0 0 0; color:var(--text-dark); font-size:0.95rem;">${v.def}</p>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      startLevel(levelNum) {
+        this.currentLevel = levelNum;
+        this.currentQuestionIdx = 0;
+        document.getElementById("level-indicator").innerText = `Level ${levelNum}: ${this.levelsData[levelNum-1].title}`;
+        this.showScreen("activity");
+        this.loadQuestion();
+      }
+
+      loadQuestion() {
+        const card = document.getElementById("activity-card");
+        card.innerHTML = "";
+
+        const qData = this.getQuestionData(this.currentLevel, this.currentQuestionIdx);
+        if (!qData) {
+          this.completeLevel();
+          return;
+        }
+
+        // Header + Question
+        const header = document.createElement("div");
+        header.className = "question-header";
+        header.innerHTML = `
+          <button class="speaker-btn" onclick="app.speak('${qData.question.replace(/'/g, "\\'")}')">🔊</button>
+          <h2 class="question-text">${qData.question}</h2>
+        `;
+        card.appendChild(header);
+
+        // Speech Auto-Read
+        this.speak(qData.question);
+
+        // Visual Area
+        if (qData.visual) {
+          const vis = document.createElement("div");
+          vis.className = "visual-area";
+          vis.innerHTML = qData.visual;
+          card.appendChild(vis);
+        }
+
+        // Interactive or Standard Choices
+        if (qData.customUI) {
+          qData.customUI(card);
+        } else if (qData.options) {
+          const optsGrid = document.createElement("div");
+          optsGrid.className = "options-grid";
+
+          qData.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "btn-option";
+            btn.innerHTML = `<span>${opt.icon || ''}</span> <span>${opt.text}</span>`;
+            
+            btn.onclick = () => {
+              if (opt.correct) {
+                this.handleCorrectAnswer(btn, opt.text);
+              } else {
+                this.handleIncorrectAnswer(btn);
+              }
+            };
+            optsGrid.appendChild(btn);
+          });
+          card.appendChild(optsGrid);
+        }
+      }
+
+      handleIncorrectAnswer(btn) {
+        // STRICT CRITERIA: DO NOTHING for incorrect choices.
+        // No sounds, no red Xs, no score deduction, no restarts.
+        // Just let them tap again gently.
+      }
+
+      handleCorrectAnswer(btn, answerText) {
+        btn.classList.add("correct");
+        soundFX.playCorrect();
+        this.speak(answerText || "Correct!");
+        this.state.stars += 1;
+        this.updateHeaderDisplay();
+        this.saveLocalStorage();
+
+        setTimeout(() => {
+          this.currentQuestionIdx++;
+          this.loadQuestion();
+        }, 1200);
+      }
+
+      completeLevel() {
+        const card = document.getElementById("activity-card");
+        const lvlObj = this.levelsData[this.currentLevel - 1];
+
+        // Award badge & unlock next level
+        if (!this.state.earnedBadges.includes(lvlObj.badge)) {
+          this.state.earnedBadges.push(lvlObj.badge);
+        }
+        if (this.currentLevel === this.state.unlockedLevel && this.state.unlockedLevel < 10) {
+          this.state.unlockedLevel += 1;
+        }
+        this.saveLocalStorage();
+
+        soundFX.playFanfare();
+        this.triggerConfetti();
+
+        card.innerHTML = `
+          <div style="font-size: 4rem; margin-bottom: 10px;">🎉⭐🏆</div>
+          <h2 style="color: var(--accent-green); margin: 0 0 10px 0;">Awesome Job!</h2>
+          <p style="font-size: 1.2rem; color: var(--text-dark);">You completed <strong>Level ${this.currentLevel}</strong>!</p>
+          <p style="font-size: 1.1rem; color: var(--secondary);">Earned Badge: <strong>${lvlObj.badge}</strong></p>
+          <button class="action-btn" onclick="app.showScreen('menu')">Continue 🚀</button>
+        `;
+
+        this.speak(`Awesome job! You completed Level ${this.currentLevel}! You earned the badge: ${lvlObj.badge}`);
+      }
+
+      triggerConfetti() {
+        const canvas = document.getElementById("celebration-canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = Array.from({ length: 60 }, () => ({
+          x: Math.random() * canvas.width,
+          y: -20,
+          size: Math.random() * 8 + 6,
+          color: ['#f59e0b', '#2563eb', '#16a34a', '#ec4899', '#8b5cf6'][Math.floor(Math.random() * 5)],
+          speedY: Math.random() * 4 + 3,
+          speedX: Math.random() * 2 - 1
+        }));
+
+        let frame = 0;
+        function animate() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach(p => {
+            p.y += p.speedY;
+            p.x += p.speedX;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x, p.y, p.size, p.size);
+          });
+          frame++;
+          if (frame < 120) requestAnimationFrame(animate);
+          else ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        animate();
+      }
+
+      resetProgress() {
+        if (confirm("Are you sure you want to reset all stars and level progress?")) {
+          this.state = {
+            stars: 0,
+            unlockedLevel: 1,
+            soundOn: true,
+            ttsOn: true,
+            earnedBadges: []
+          };
+          this.saveLocalStorage();
+          this.updateHeaderDisplay();
+          this.closeModal("teacher-modal");
+          this.showScreen("menu");
+        }
+      }
+
+      // --- Questions Database ---
+      getQuestionData(level, idx) {
+        const data = {
+          // LEVEL 1: Push or Pull
+          1: [
+            {
+              question: "Opening a drawer. Is this a PUSH or a PULL?",
+              visual: Visuals.drawer,
+              options: [
+                { text: "PUSH 🖐️", correct: false },
+                { text: "PULL 🪢", correct: true }
+              ]
+            },
+            {
+              question: "Pushing a shopping cart. Is this a PUSH or a PULL?",
+              visual: Visuals.shoppingCart,
+              options: [
+                { text: "PUSH 🖐️", correct: true },
+                { text: "PULL 🪢", correct: false }
+              ]
+            },
+            {
+              question: "Kicking a soccer ball away. Is this a PUSH or a PULL?",
+              visual: Visuals.kickBall,
+              options: [
+                { text: "PUSH 🖐️", correct: true },
+                { text: "PULL 🪢", correct: false }
+              ]
+            },
+            {
+              question: "Pulling a wagon behind you. Is this a PUSH or a PULL?",
+              visual: Visuals.wagon,
+              options: [
+                { text: "PUSH 🖐️", correct: false },
+                { text: "PULL 🪢", correct: true }
+              ]
+            },
+            {
+              question: "Closing a door shut. Is this a PUSH or a PULL?",
+              visual: Visuals.door,
+              options: [
+                { text: "PUSH 🖐️", correct: true },
+                { text: "PULL 🪢", correct: false }
+              ]
+            },
+            {
+              question: "Zipping up a jacket zipper. Is this a PUSH or a PULL?",
+              visual: Visuals.zipper,
+              options: [
+                { text: "PUSH 🖐️", correct: false },
+                { text: "PULL 🪢", correct: true }
+              ]
+            }
+          ],
+
+          // LEVEL 2: Movement Simulations
+          2: [
+            {
+              question: "A force can make objects move! Tap PUSH to move the ball away.",
+              visual: `<svg id="sim-ball" class="demo-graphic" viewBox="0 0 300 120">
+                <circle id="ball-obj" cx="50" cy="80" r="24" fill="#38bdf8" stroke="#0284c7" stroke-width="4"/>
+                <line x1="10" y1="104" x2="290" y2="104" stroke="#94a3b8" stroke-width="4"/>
+              </svg>`,
+              options: [
+                { text: "PUSH 🖐️", correct: true }
+              ]
+            },
+            {
+              question: "A pull moves something toward you. Tap PULL to move the wagon closer!",
+              visual: `<svg id="sim-wagon" class="demo-graphic" viewBox="0 0 300 120">
+                <rect id="wagon-obj" x="180" y="50" width="80" height="35" rx="4" fill="#ef4444"/>
+                <circle id="w1" cx="200" cy="92" r="10" fill="#1e293b"/>
+                <circle id="w2" cx="240" cy="92" r="10" fill="#1e293b"/>
+                <line x1="10" y1="102" x2="290" y2="102" stroke="#94a3b8" stroke-width="4"/>
+              </svg>`,
+              options: [
+                { text: "PULL 🪢", correct: true }
+              ]
+            },
+            {
+              question: "A STRONGER push makes an object move FASTER and FURTHER. Tap Strong Push!",
+              visual: Visuals.kickBall,
+              options: [
+                { text: "Gentle Push", correct: false },
+                { text: "STRONG PUSH 💥", correct: true }
+              ]
+            }
+          ],
+
+          // LEVEL 3: What Is a Simple Machine?
+          3: [
+            {
+              question: "What is a simple machine?",
+              visual: Visuals.lever,
+              options: [
+                { text: "A tool that helps us do work easily", correct: true },
+                { text: "A computer that plays video games", correct: false },
+                { text: "Something that makes work disappear completely", correct: false }
+              ]
+            },
+            {
+              question: "Simple machines change the way a force is used. Which tool helps lift or move heavy things?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "Ramp 📐", correct: true },
+                { text: "Pillow 🛌", correct: false }
+              ]
+            }
+          ],
+
+          // LEVEL 4: The Six Simple Machines
+          4: [
+            {
+              question: "1. LEVER: A stiff bar that balances on a pivot point (fulcrum). Example: Seesaw.",
+              visual: Visuals.lever,
+              options: [{ text: "I understand! Next ➡️", correct: true }]
+            },
+            {
+              question: "2. WHEEL AND AXLE: A round wheel attached to a central rod. Example: Bicycle wheel.",
+              visual: Visuals.wheelAxle,
+              options: [{ text: "I understand! Next ➡️", correct: true }]
+            },
+            {
+              question: "3. PULLEY: A wheel with a rope to lift loads up and down. Example: Flagpole.",
+              visual: Visuals.pulley,
+              options: [{ text: "I understand! Next ➡️", correct: true }]
+            },
+            {
+              question: "4. INCLINED PLANE: A sloped flat surface or ramp. Example: Slide or truck ramp.",
+              visual: Visuals.inclinedPlane,
+              options: [{ text: "I understand! Next ➡️", correct: true }]
+            },
+            {
+              question: "5. WEDGE: A tool with a sharp edge to split or cut things. Example: Knife or Axe.",
+              visual: Visuals.wedge,
+              options: [{ text: "I understand! Next ➡️", correct: true }]
+            },
+            {
+              question: "6. SCREW: An inclined plane wrapped in a spiral around a central post. Example: Jar lid.",
+              visual: Visuals.screw,
+              options: [{ text: "I understand! Next ➡️️", correct: true }]
+            }
+          ],
+
+          // LEVEL 5: Identify Simple Machines
+          5: [
+            {
+              question: "A ramp is used to roll a heavy box into a truck. What simple machine is a ramp?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "Inclined Plane", correct: true },
+                { text: "Lever", correct: false },
+                { text: "Screw", correct: false }
+              ]
+            },
+            {
+              question: "A playground seesaw goes up and down. What simple machine is a seesaw?",
+              visual: Visuals.lever,
+              options: [
+                { text: "Pulley", correct: false },
+                { text: "Lever", correct: true },
+                { text: "Wedge", correct: false }
+              ]
+            },
+            {
+              question: "A flagpole uses a rope and top wheel to raise a flag. What simple machine is this?",
+              visual: Visuals.pulley,
+              options: [
+                { text: "Wheel & Axle", correct: false },
+                { text: "Pulley", correct: true },
+                { text: "Screw", correct: false }
+              ]
+            },
+            {
+              question: "A knife cuts an apple into two pieces. What simple machine is a knife?",
+              visual: Visuals.wedge,
+              options: [
+                { text: "Wedge", correct: true },
+                { text: "Inclined Plane", correct: false },
+                { text: "Lever", correct: false }
+              ]
+            },
+            {
+              question: "A jar lid twists round and round to lock tight. What simple machine is a jar lid?",
+              visual: Visuals.screw,
+              options: [
+                { text: "Screw", correct: true },
+                { text: "Pulley", correct: false },
+                { text: "Wheel & Axle", correct: false }
+              ]
+            }
+          ],
+
+          // LEVEL 6: Simple Machines Around Us
+          6: [
+            {
+              question: "Which simple machine helps move heavy boxes easily into a high moving truck?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "Ramp (Inclined Plane)", correct: true },
+                { text: "Knife (Wedge)", correct: false },
+                { text: "Jar Lid (Screw)", correct: false }
+              ]
+            },
+            {
+              question: "Which simple machine helps raise the school flag to the top of the pole?",
+              visual: Visuals.pulley,
+              options: [
+                { text: "Pulley", correct: true },
+                { text: "Ramp", correct: false },
+                { text: "Seesaw", correct: false }
+              ]
+            },
+            {
+              question: "Which simple machine helps split a wooden log into firewood?",
+              visual: Visuals.wedge,
+              options: [
+                { text: "Axe (Wedge)", correct: true },
+                { text: "Wheel & Axle", correct: false }
+              ]
+            }
+          ],
+
+          // LEVEL 7: How Simple Machines Help
+          7: [
+            {
+              question: "How do simple machines help us?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "They change how a force is used to make work easier", correct: true },
+                { text: "They destroy heavy weights instantly", correct: false }
+              ]
+            },
+            {
+              question: "Which way uses LESS force to raise a heavy box 1 meter high?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "Sliding it up a long ramp", correct: true },
+                { text: "Lifting it straight up with hands", correct: false }
+              ]
+            }
+          ],
+
+          // LEVEL 8: Compare and Choose
+          8: [
+            {
+              question: "Which tool would make moving a heavy crate onto a stage easiest?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "A long Ramp", correct: true },
+                { text: "Lifting straight up", correct: false }
+              ]
+            },
+            {
+              question: "Which tool helps cut through thick cardboard paper easily?",
+              visual: Visuals.wedge,
+              options: [
+                { text: "Scissors (Wedge & Lever)", correct: true },
+                { text: "A flagpole Pulley", correct: false }
+              ]
+            },
+            {
+              question: "Which tool helps roll a heavy heavy box across the room smooth and fast?",
+              visual: Visuals.wheelAxle,
+              options: [
+                { text: "Rolling Cart (Wheel & Axle)", correct: true },
+                { text: "A doorstop Wedge", correct: false }
+              ]
+            }
+          ],
+
+          // LEVEL 9: Predict What Will Happen
+          9: [
+            {
+              question: "A soccer ball is sitting still on the grass. What will happen if you PUSH it with your foot?",
+              visual: Visuals.kickBall,
+              options: [
+                { text: "It will roll away forward", correct: true },
+                { text: "It will stay completely still", correct: false },
+                { text: "It will turn into a ramp", correct: false }
+              ]
+            },
+            {
+              question: "A toy car is rolling fast. What could make it STOP moving?",
+              visual: Visuals.shoppingCart,
+              options: [
+                { text: "A push in the opposite direction", correct: true },
+                { text: "Blowing gentle air on it", correct: false }
+              ]
+            },
+            {
+              question: "You push DOWN on one side of a seesaw lever. What will happen to the other side?",
+              visual: Visuals.lever,
+              options: [
+                { text: "It will go UP into the air", correct: true },
+                { text: "It will fall off", correct: false }
+              ]
+            }
+          ],
+
+          // LEVEL 10: Simple Machines Challenge (Final Mastery)
+          10: [
+            {
+              question: "CHALLENGE 1: What type of machine is a ramp?",
+              visual: Visuals.inclinedPlane,
+              options: [
+                { text: "Inclined Plane", correct: true },
+                { text: "Lever", correct: false }
+              ]
+            },
+            {
+              question: "CHALLENGE 2: Is pulling a wagon toward you a PUSH or a PULL?",
+              visual: Visuals.wagon,
+              options: [
+                { text: "PULL 🪢", correct: true },
+                { text: "PUSH 🖐️", correct: false }
+              ]
+            },
+            {
+              question: "CHALLENGE 3: Which machine uses a wheel and rope to lift things high?",
+              visual: Visuals.pulley,
+              options: [
+                { text: "Pulley", correct: true },
+                { text: "Screw", correct: false }
+              ]
+            },
+            {
+              question: "CHALLENGE 4: Do machines make work disappear?",
+              visual: Visuals.lever,
+              options: [
+                { text: "No, they change how force is used!", correct: true },
+                { text: "Yes, work disappears completely", correct: false }
+              ]
+            }
+          ]
+        };
+
+        return data[level] ? data[level][idx] : null;
+      }
+    }
+
+    // Initialize App
+    const app = new App();
+    window.addEventListener("DOMContentLoaded", () => app.init());
+  </script>
+</body>
+</html>
